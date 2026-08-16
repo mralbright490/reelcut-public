@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReelCut Web - AP DreamStudios</title>
+    <!-- Load FFmpeg.wasm from CDN -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
     <style>
         :root {
             --bg-color: #121212;
@@ -98,6 +100,11 @@
             background-color: var(--primary-hover);
         }
 
+        .btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
         .terminal-box {
             background-color: #000;
             color: #4af626;
@@ -106,8 +113,13 @@
             border-radius: 6px;
             margin-top: 1.5rem;
             text-align: left;
-            height: 150px;
+            height: 180px;
             overflow-y: auto;
+        }
+
+        .output-section {
+            margin-top: 1.5rem;
+            display: none;
         }
 
         footer {
@@ -129,19 +141,24 @@
 
     <div class="container">
         <div class="app-panel">
-            <h2>Interactive Media Slicing Engine</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Upload your source video file below to run automated client-side clip extraction and metadata logging.</p>
+            <h2>Client-Side Video Slicing Engine</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Select your source video file. The browser will process and slice the media locally via WebAssembly.</p>
             
             <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-                <p id="dropText">📁 Click or drag source video file here</p>
-                <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
+                <p id="dropText">📁 Click or drop source video file here</p>
+                <input type="file" id="fileInput" accept="video/*" style="display: none;" onchange="handleFileSelect(event)">
             </div>
 
-            <button class="btn" id="processBtn" onclick="startProcessing()" disabled>Initialize Auto-Cut (10 Segments)</button>
+            <button class="btn" id="processBtn" onclick="runFFmpeg()" disabled>Execute Browser Slicing</button>
 
             <div class="terminal-box" id="terminalLogs">
-                > ReelCut Web App Engine v1.0 Initialized.<br>
-                > Status: WAITING FOR SOURCE MEDIA...<br>
+                > ReelCut WebAssembly Engine v1.0 Initialized.<br>
+                > Status: WAITING FOR USER INPUT...<br>
+            </div>
+
+            <div class="output-section" id="outputSection">
+                <h3 style="color: var(--accent); margin-bottom: 0.5rem;">Processed Clip Output:</h3>
+                <video id="outputVideo" controls style="max-width: 100%; border-radius: 4px;"></video>
             </div>
         </div>
     </div>
@@ -152,16 +169,8 @@
 
     <script>
         let selectedFile = null;
-
-        function handleFileSelect(event) {
-            const files = event.target.files;
-            if (files.length > 0) {
-                selectedFile = files[0];
-                document.getElementById('dropText').innerText = `Selected File: ${selectedFile.name}`;
-                document.getElementById('processBtn').removeAttribute('disabled');
-                logMessage(`Loaded asset: ${selectedFile.name} (${(selectedFile.size / (1024*1024)).toFixed(2)} MB)`);
-            }
-        }
+        const { FFmpeg } = FFmpegWASM;
+        let ffmpeg = null;
 
         function logMessage(msg) {
             const terminal = document.getElementById('terminalLogs');
@@ -169,16 +178,53 @@
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        function startProcessing() {
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                selectedFile = files[0];
+                document.getElementById('dropText').innerText = `Loaded File: ${selectedFile.name}`;
+                document.getElementById('processBtn').removeAttribute('disabled');
+                logMessage(`Asset staged: ${selectedFile.name} (${(selectedFile.size / (1024*1024)).toFixed(2)} MB)`);
+            }
+        }
+
+        async function runFFmpeg() {
             if (!selectedFile) return;
-            logMessage("Initializing FFmpeg browser worker pipeline...");
-            setTimeout(() => {
-                logMessage("Analyzing frame rates and audio streams...");
-            }, 800);
-            setTimeout(() => {
-                logMessage("Successfully sliced media into 10 synchronized clips!");
-                logMessage("Ready for Shotcut MLT export. Process complete.");
-            }, 2000);
+
+            document.getElementById('processBtn').setAttribute('disabled', 'true');
+            logMessage("Loading FFmpeg core into browser memory (WASM)...");
+
+            if (!ffmpeg) {
+                ffmpeg = new FFmpeg();
+                ffmpeg.on("log", ({ message }) => {
+                    // Uncomment below if you want verbose ffmpeg logs in terminal
+                    // logMessage(message);
+                });
+                await ffmpeg.load({
+                    coreURL: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js"
+                });
+            }
+
+            logMessage("FFmpeg engine loaded successfully!");
+            logMessage("Writing file to virtual memory filesystem...");
+
+            const fileData = await selectedFile.arrayBuffer();
+            await ffmpeg.writeFile("input.mp4", new Uint8Array(fileData));
+
+            logMessage("Slicing first 10 seconds of video as a test segment...");
+            // Run ffmpeg command to trim the first 10 seconds
+            await ffmpeg.exec(["-i", "input.mp4", "-ss", "00:00:00", "-to", "00:00:10", "-c", "copy", "output_clip.mp4"]);
+
+            logMessage("Extraction complete! Rendering clip in browser...");
+            const data = await ffmpeg.readFile("output_clip.mp4");
+            
+            const videoUrl = URL.createObjectURL(new Blob([data.buffer], { type: "video/mp4" }));
+            const outputVideo = document.getElementById("outputVideo");
+            outputVideo.src = videoUrl;
+            
+            document.getElementById("outputSection").style.display = "block";
+            logMessage("Process finished successfully. Playback ready below!");
+            document.getElementById('processBtn').removeAttribute('disabled');
         }
     </script>
 
