@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReelCut - AP DreamStudios</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --panel-bg: #1e1e1e;
+            --primary: #007acc;
+            --primary-hover: #005f9e;
+            --accent: #00ffcc;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        nav {
+            background-color: var(--panel-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .hero {
+            padding: 6rem 2rem;
+            text-align: center;
+            background: linear-gradient(180deg, var(--panel-bg) 0%, var(--bg-color) 100%);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--text-main);
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--accent);
+            color: var(--bg-color);
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background-color: var(--panel-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            flex: 1 1 300px;
+            text-align: center;
+            border-top: 4px solid var(--primary);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-top: 4px solid var(--accent);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--panel-bg);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+
+        .terminal-box {
+            background-color: #000;
+            color: #4af626;
+            font-family: 'Consolas', monospace;
+            padding: 1.5rem;
+            border-radius: 6px;
+            max-width: 800px;
+            margin: 2rem auto;
+            text-align: left;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">REEL<span>CUT</span></div>
+        <div>
+            <a href="#" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">GitHub Repo</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>Slicing Made Simple</h1>
+        <p>The lightweight, public release of AP DreamStudios' powerful video automation tool. Generate clips, extract metadata, and orchestrate MLT projects effortlessly.</p>
+        <div>
+            <a href="#download" class="btn">Download Latest Release</a>
+            <a href="#docs" class="btn btn-outline">View Documentation</a>
+        </div>
+    </header>
+
+    <div class="terminal-box">
+        > Initializing ReelCut Web Portal...<br>
+        > Status: ACTIVE (Embedded Engine Ready)<br>
+        > AP DreamStudios System Initialized.<br>
+        > Ready for download.
+    </div>
+
+    <section class="features">
+        <div class="feature-card">
+            <h3>⚡ Auto-Cut 10 Clips</h3>
+            <p>Automatically distribute and slice your source media into 10 precisely timed segments using a bulletproof FFmpeg integration.</p>
+        </div>
+        <div class="feature-card">
+            <h3>🤖 Whisper AI Ready</h3>
+            <p>Seamlessly generate speech-to-text transcriptions for every generated clip using the self-healing OpenAI Whisper pipeline.</p>
+        </div>
+        <div class="feature-card">
+            <h3>🎬 Shotcut MLT Inject</h3>
+            <p>Inject your precut clips directly into Shotcut MLT templates with automatic asset remapping for zero-friction editing.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 AP DreamStudios. Engineered for Mr. Albright.</p>
+    </footer>
+
+</body>
+</html>
